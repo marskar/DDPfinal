@@ -80,7 +80,7 @@ pc
 
 d1k<-datFinal[which(datFinal$Debit > 1000),]
 
-pd <- plot_ly(d1000, labels = ~Account, values = d1k$Debit, type = 'pie') %>%
+pd <- plot_ly(d1k, labels = ~Account, values = d1k$Debit, type = 'pie') %>%
   layout(title = 'Debits',
          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))

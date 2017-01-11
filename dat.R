@@ -60,31 +60,51 @@ library(plotly)
 ## stacked bar in plotly
 mon<-month(datFinal$Date)
 
+
+#Static plot of debits and credits
 bcd<-p <- plot_ly(datFinal, x = ~mon, y = ~Debit, type = 'bar', name = 'Debits') %>%
   add_trace(y = ~Credit, name = 'Credits') %>%
   layout(title = "2018 Credits and Debits by month", yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
 bcd
-bd <- plot_ly(datFinal, x = ~mon, y = ~Debit, type = 'bar', name = 'Debits', color = ~Account) %>%
+
+## Soon2B reactive plot: Debit bar chart with threshold slider
+d1k<-datFinal[which(datFinal$Debit > 1000),]
+bd <- plot_ly(d1k, x = ~month(d1k$Date), y = ~Debit, type = 'bar', name = 'Debits', color = ~Account) %>%
     layout(title = "2018 Debits by month", yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
 bd
-
-bc <- plot_ly(datFinal, x = ~mon, y = ~Credit, type = 'bar', name = 'Credits', color = ~Account) %>%
+## Soon2B reactive plot: Credit bar chart with threshold slider
+c1k<-datFinal[which(datFinal$Credit > 1000),]
+bc <- plot_ly(c1k, x = ~month(c1k$Date), y = ~Credit, type = 'bar', name = 'Credits', color = ~Account) %>%
     layout(title = "2018 Credits by month", yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
-bcfi
-
-pc <- plot_ly(datFinal, labels = ~Account, values = ~Credit, type = 'pie') %>%
+bc
+## Soon2B reactive plot: Credit pie chart with threshold slider
+pc <- plot_ly(c1k, labels = ~Account, values = ~Credit, type = 'pie') %>%
   layout(title = 'Credits',
          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 pc
 
-d1k<-datFinal[which(datFinal$Debit > 1000),]
-
+## Soon2B reactive plot: Debit pie chart with threshold slider
 pd <- plot_ly(d1k, labels = ~Account, values = d1k$Debit, type = 'pie') %>%
   layout(title = 'Debits',
          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 pd
+## Soon2B reactive plot: Debit pie chart with month slider
+dmon<-d1k[which(month(d1k$Date)==1),]
+pdJan <- plot_ly(dmon, labels = ~Account, values = dmon$Debit, type = 'pie') %>%
+  layout(title = 'Debits',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+pdJan
+
+## Soon2B reactive plot: Debit pie chart with month slider
+cmon<-c1k[which(month(c1k$Date)==1),]
+pcJan <- plot_ly(cmon, labels = ~Account, values = cmon$Credit, type = 'pie') %>%
+  layout(title = 'Crebits',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+pcJan
 
 ##pcd <- plot_ly() %>%
 ##  add_pie(data = datFinal, labels = ~Account, values = ~Credit,

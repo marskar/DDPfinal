@@ -2,8 +2,8 @@
 
 fileURL<- "http://www.journalofaccountancy.com/content/dam/jofa/issues/2017/jan/general-ledger-collins.xlsx"
 destfile <- "./data.xlsx"
-download.file("http://www.journalofaccountancy.com/content/dam/jofa/issues/2017/jan/general-ledger-collins.xlsx", 
-              "t.xlsx", method = "curl")
+##download.file("http://www.journalofaccountancy.com/content/dam/jofa/issues/2017/jan/general-ledger-collins.xlsx", 
+##              "t.xlsx", method = "curl")
 if (!file.exists(destfile)) {
   setInternet2(TRUE)
   download.file(fileURL ,destfile,method="curl") }
@@ -27,13 +27,93 @@ datNoNA <- dat[, -which(colMeans(is.na(dat)) > 0.99)]
 ## remove rows with greater than 99% NAs 
 datNoNA2 <- datNoNA[-which(rowMeans(is.na(datNoNA)) > 0.99), ]
 ## copy down names from column 1
+install.packages("tidyr")
+library(tidyr)
+datFinal<-datNoNA2 %>% fill(NA..1)
 
-## remove rows without a date
-datNoNA2 <- datNoNA[-which(is.na(datNoNA$Date)), ]
-colMeans(is.na(datNoNA2))*100
-comp<-compare(datNoNA, datNoNA2, allowAll = TRUE)
-comp$tM
+datNoNA3<-datNoNA2 %>% fill(NA..1)
+
+## remove rows with zero balance
+datNoNA4 <- datNoNA3[-which(datNoNA3$Balance==0), ]
+## remove rows without dates
+
+## remove rows without dates
+datFinal <- datNoNA4[-which(is.na(datNoNA4$Date)), ]
+colMeans(is.na(datFinal))*100
+
+##rename 1st column
+names(datFinal)[names(datFinal)=="NA..1"] <- "Account"
+
+## save "scrubbed" data as xlsx
+write.xlsx(datFinal, "scrubbed.xlsx", sheetName = "Sheet1")
+
+barplot(datFinal$Debit)
+
+counts <- table(datFinal$Debit[datFinal$Year==2018, ])
+barplot(counts, main="Car Distribution by Gears and VS",
+        xlab="Number of Gears", col=c("darkblue","red"),
+        legend = rownames(counts))
+install.packages("lubridate")
+library(lubridate)
+
+
+## stacked bar in ggplot2
+##install.packages("ggplot2")
+##library(ggplot2)
+##ggplot(data = datFinal, aes(x = month(datFinal$Date), y = Debit, fill = Account)) + 
+##  geom_bar(stat = "identity")
+install.packages("plotly")
+library(plotly)
+## stacked bar in plotly
+mon<-month(datFinal$Date)
+
+bcd<-p <- plot_ly(datFinal, x = ~mon, y = ~Debit, type = 'bar', name = 'Debits') %>%
+  add_trace(y = ~Credit, name = 'Credits') %>%
+  layout(title = "2018 Credits and Debits by month", yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
+bcd
+bd <- plot_ly(datFinal, x = ~mon, y = ~Debit, type = 'bar', name = 'Debits', color = ~Account) %>%
+    layout(title = "2018 Debits by month", yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
+bd
+
+bc <- plot_ly(datFinal, x = ~mon, y = ~Credit, type = 'bar', name = 'Credits', color = ~Account) %>%
+    layout(title = "2018 Credits by month", yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
+bc
+
+pc <- plot_ly(datFinal, labels = ~Account, values = ~Credit, type = 'pie') %>%
+  layout(title = 'Credits',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+pc
+
+d1k<-datFinal[which(datFinal$Debit > 1000),]
+
+pd <- plot_ly(d1000, labels = ~Account, values = d1k$Debit, type = 'pie') %>%
+  layout(title = 'Debits',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+pd
+
+##pcd <- plot_ly() %>%
+##  add_pie(data = datFinal, labels = ~Account, values = ~Credit,
+##          name = "Credit", domain = list(x = c(0, 0.4), y = c(0.4, 1))) %>%
+##  add_pie(data = datFinal, labels = ~Account, values = ~Debit,
+##          name = "Debit", domain = list(x = c(0.6, 1), y = c(0.4, 1))) %>%
+##  layout(title = "Pie Charts with Subplots", showlegend = T,
+##         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+##         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+##pcd
+
 ## Remove rows at the end
 ## head(datNoNA,n=10)
 ## tail(datNoNA, n=10)
 ## datTrim<- datNoNA[c(-1,-5447:-5455),]
+df <- data.frame(date = datFinal$Date,
+                 year = as.numeric(format(datFinal$Date, format = "%Y")))
+year(datFinal$Date)
+if(!require(installr)) {
+  install.packages("installr"); 
+  require(installr) #load / install+load installr
+
+# using the package:
+updateR() # this will start the updating process of your R installation.  It will check for newer versions, and if one is available, will guide you through the decisions you'd need to make.

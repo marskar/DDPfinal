@@ -47,15 +47,8 @@ names(datFinal)[names(datFinal)=="NA..1"] <- "Account"
 ## save "scrubbed" data as xlsx
 write.xlsx(datFinal, "scrubbed.xlsx", sheetName = "Sheet1")
 
-barplot(datFinal$Debit)
-
-counts <- table(datFinal$Debit[datFinal$Year==2018, ])
-barplot(counts, main="Car Distribution by Gears and VS",
-        xlab="Number of Gears", col=c("darkblue","red"),
-        legend = rownames(counts))
 install.packages("lubridate")
 library(lubridate)
-
 
 ## stacked bar in ggplot2
 ##install.packages("ggplot2")
@@ -77,7 +70,7 @@ bd
 
 bc <- plot_ly(datFinal, x = ~mon, y = ~Credit, type = 'bar', name = 'Credits', color = ~Account) %>%
     layout(title = "2018 Credits by month", yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
-bc
+bcfi
 
 pc <- plot_ly(datFinal, labels = ~Account, values = ~Credit, type = 'pie') %>%
   layout(title = 'Credits',
@@ -103,17 +96,3 @@ pd
 ##         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 
 ##pcd
-
-## Remove rows at the end
-## head(datNoNA,n=10)
-## tail(datNoNA, n=10)
-## datTrim<- datNoNA[c(-1,-5447:-5455),]
-df <- data.frame(date = datFinal$Date,
-                 year = as.numeric(format(datFinal$Date, format = "%Y")))
-year(datFinal$Date)
-if(!require(installr)) {
-  install.packages("installr"); 
-  require(installr) #load / install+load installr
-
-# using the package:
-updateR() # this will start the updating process of your R installation.  It will check for newer versions, and if one is available, will guide you through the decisions you'd need to make.

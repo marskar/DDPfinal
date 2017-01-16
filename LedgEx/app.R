@@ -28,7 +28,9 @@ ui <- shinyUI(fluidPage(
       # Show a plot of the generated distribution
       mainPanel(
          plotlyOutput("pc"),
-         plotlyOutput("pd")
+         plotlyOutput("pd"),
+         plotlyOutput("bc"),
+         plotlyOutput("bd")
       )
    )
 ))
@@ -56,6 +58,25 @@ server <- shinyServer(function(input, output) {
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
+  ## Reactive plot: Credit bar chart with threshold slider  
+  output$bc <- renderPlotly({
+    c1k<-datFinal[which(datFinal$Credit > input$cThresh),]
+    cmon<-c1k[which(month(c1k$Date)==input$Month),]
+    plot_ly(c1k, x = ~month(c1k$Date), y = ~Credit, 
+            type = 'bar', name = 'Credits', color = ~Account) %>%
+      layout(title = "2018 Credits by month", 
+             yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
+  })
+  ## Reactive plot: Debit bar chart with threshold slider
+  output$bd <- renderPlotly({
+    d1k<-datFinal[which(datFinal$Debit > input$dThresh),]
+    dmon<-d1k[which(month(d1k$Date)==input$Month),]
+    plot_ly(d1k, x = ~month(d1k$Date), y = ~Debit, 
+            type = 'bar', name = 'Debits', color = ~Account) %>%
+      layout(title = "2018 Debits by month", 
+             yaxis = list(title = 'Dollars'), xaxis = list(title = "Month"), barmode = 'stack')
+  })  
+  
 })
 
 

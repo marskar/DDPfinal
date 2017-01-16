@@ -1,0 +1,11 @@
+name: DDPfinal
+title:
+account: marskar
+server: shinyapps.io
+appId: 151290
+bundleId: 680605
+url: https://marskar.shinyapps.io/DDPfinal/
+when: 1484542507.67266
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: dat.R|DDPfinal.rmd|README.md|DDPfinal/server.R|DDPfinal/ui.R|LedgEx/app.R

@@ -21,11 +21,13 @@ ui <- shinyUI(fluidPage(
    sidebarLayout(
       sidebarPanel(
         sliderInput("Month", "Month:", min = 1, max = 12, value = 6),
+        sliderInput("cThresh", "Credit Minimum:", min = 1, max = 10000, value = 100),
         sliderInput("dThresh", "Debit Minimum:", min = 1, max = 10000, value = 100)
       ),
       
       # Show a plot of the generated distribution
       mainPanel(
+         plotlyOutput("pc"),
          plotlyOutput("pd")
       )
    )
@@ -34,7 +36,18 @@ ui <- shinyUI(fluidPage(
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output) {
 
-  ## Reactive plot: Debit pie chart with threshold slider
+## Reactive plot: Credit pie chart with threshold slider
+  output$pc <- renderPlotly({
+    c1k<-datFinal[which(datFinal$Credit > input$cThresh),]
+    cmon<-c1k[which(month(c1k$Date)==input$Month),]
+    plot_ly(cmon, labels = ~Account, values = ~cmon$Credit, type = 'pie') %>%
+      layout(title = 'Credits',
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE)
+      )
+  })    
+  
+  ## Reactive plot: Debit pie chart with threshold and month slider
   output$pd <- renderPlotly({
     d1k<-datFinal[which(datFinal$Debit > input$dThresh),]
     dmon<-d1k[which(month(d1k$Date)==input$Month),]
@@ -43,7 +56,7 @@ server <- shinyServer(function(input, output) {
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
   })
-  })
+})
 
 
 # Run the application 

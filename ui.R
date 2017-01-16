@@ -22,16 +22,16 @@ shinyUI(
           # Bars
           tabPanel("Bar charts"),
             textOutput('2018 Credits by Month'),
-            plotOutput("bc"),
+            plotlyOutput("bc"),
             textOutput('2018 Debits by Month'),
-            plotOutput("bd")
+            plotlyOutput("bd")
           ),
           # Pies
           tabPanel("Pie charts"),
             textOutput('2018 Credits by Month'),
-            plotOutput("pc"),
+            plotlyOutput("pc"),
             textOutput('2018 Debits by Month'),
-            plotOutput("pd")
+            plotlyOutput("pd")
           ),
           # Data panel
           tabPanel(p(icon("table"), "Data"),
